@@ -1,6 +1,8 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Float32
 import lgpio
 import numpy as np
 
@@ -14,6 +16,11 @@ class CmdVelMotorDriver(Node):
             '/cmd_vel',
             self.listener_callback,
             10)
+        # Speed multiplier set from the chest display, latched so a restart gets the last value
+        self.speed_scale = 1.0
+        latched = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL,
+                             reliability=ReliabilityPolicy.RELIABLE)
+        self.create_subscription(Float32, '/semubot/speed_scale', self.speed_scale_callback, latched)
         self.h = lgpio.gpiochip_open(CHIP)
         self.pwm_pins = [13, 19, 12]   # Right, Left, Back
         self.dir_pins = [6, 26, 5]     # Right, Left, Back
@@ -34,10 +41,14 @@ class CmdVelMotorDriver(Node):
 
         print('Listening for messages on ROS topic /cmd_vel')
 
+    def speed_scale_callback(self, msg):
+        self.speed_scale = min(max(msg.data, 0.1), 1.0)
+        print(f'Speed scale set to {self.speed_scale:.1f}')
+
     def listener_callback(self, msg):
-        x = msg.linear.x
-        y = msg.linear.y
-        z = msg.angular.z
+        x = msg.linear.x * self.speed_scale
+        y = msg.linear.y * self.speed_scale
+        z = msg.angular.z * self.speed_scale
 
         print(f'Received message to move x: {x} y: {y} z: {z}')
 
