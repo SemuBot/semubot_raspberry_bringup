@@ -12,6 +12,13 @@ def generate_launch_description():
         ),
 
         Node(
+            package='semubot_raspberry_bringup',
+            executable='battery_monitor',
+            name='battery_monitor',
+            output='screen',
+        ),
+
+        Node(
             package='joy',
             executable='joy_node',
             name='joy_node',

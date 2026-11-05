@@ -24,6 +24,7 @@ setup(
     entry_points={
         'console_scripts': [
             'cmd_vel_motor_driver = semubot_raspberry_bringup.cmd_vel_motor_driver:main',
+            'battery_monitor = semubot_raspberry_bringup.battery_monitor:main',
         ],
     },
 )
