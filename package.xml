@@ -9,6 +9,9 @@
 
   <depend>rclpy</depend>
   <exec_depend>python3-lgpio</exec_depend>
+  <exec_depend>semubot_bringup</exec_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>teleop_twist_joy</exec_depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
